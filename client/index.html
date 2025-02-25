@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Web Interface</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="node_modules/xterm/css/xterm.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1><span class="highlight">Claude</span> Code Interface</h1>
+            <div class="connection-indicator">
+                <span id="connection-status" class="status-badge">Disconnected</span>
+            </div>
+        </header>
+        
+        <main class="app-content">
+            <section class="prompt-section">
+                <form id="prompt-form" class="prompt-form">
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="prompt-input" 
+                            placeholder="Ask Claude anything..."
+                            rows="4"
+                        ></textarea>
+                        <button type="submit" id="submit-btn" class="btn primary-btn">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Execute</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+            
+            <section class="terminal-section">
+                <div class="terminal-header">
+                    <div class="terminal-controls">
+                        <div class="control-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                    </div>
+                    <div class="terminal-actions">
+                        <button id="clear-btn" class="btn icon-btn" title="Clear terminal">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <button id="escape-btn" class="btn danger-btn" title="Send ESC key">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Cancel</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="terminal" class="terminal-container"></div>
+                
+                <div id="followup-container" class="followup-container">
+                    <form id="followup-form" class="followup-form">
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                id="followup-input" 
+                                placeholder="Enter follow-up prompt..." 
+                                autocomplete="off"
+                            />
+                            <button type="submit" id="followup-btn" class="btn send-btn">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="app-footer">
+            <p><span class="highlight">Github</span></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="node_modules/xterm/lib/xterm.js"></script>
+    <script src="app.js"></script>
+</body>
+</html> 
