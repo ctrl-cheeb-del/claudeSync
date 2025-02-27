@@ -6,12 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const createTerminalsBtn = document.getElementById('create-terminals-btn');
     const terminalCountInput = document.getElementById('terminal-count');
     const terminalCountButtons = document.getElementById('terminal-count-buttons');
-    const followupForm = document.getElementById('followup-form');
-    const followupInput = document.getElementById('followup-input');
-    const followupBtn = document.getElementById('followup-btn');
     const terminalSection = document.querySelector('.terminal-section');
     const promptSection = document.querySelector('.prompt-section');
     const terminalsGrid = document.getElementById('terminals-grid');
+    const appFooter = document.querySelector('.app-footer');
     
     // Hide terminal section initially
     if (terminalSection) {
@@ -219,11 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Set the active terminal ID
         activeTerminalId = terminalId;
         
-        // Update the followup input placeholder
-        const followupInput = document.getElementById('followup-input');
-        if (followupInput) {
-            followupInput.placeholder = `Enter follow-up prompt for Terminal ${parseInt(terminalId) + 1}...`;
-        }
         
         // Focus the terminal
         if (terminals[terminalId]) {
@@ -493,6 +486,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 promptSection.style.display = 'none';
             }
             
+            // Hide the footer when terminals are shown
+            if (appFooter) {
+                appFooter.style.display = 'none';
+            }
+            
             // Show and expand the terminal section
             terminalSection.style.display = 'flex';
             terminalSection.style.flex = '1';
@@ -570,6 +568,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 promptSection.style.display = 'none';
             }
             
+            // Hide the footer when terminals are shown
+            if (appFooter) {
+                appFooter.style.display = 'none';
+            }
+            
             // Show and expand the terminal section
             terminalSection.style.display = 'flex';
             terminalSection.style.flex = '1';
@@ -622,50 +625,16 @@ document.addEventListener('DOMContentLoaded', () => {
         promptInput.value = '';
     });
     
-    // Follow-up form submission handler
-    followupForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const followupPrompt = followupInput.value.trim();
-        if (!followupPrompt || isProcessing) return;
-        
-        // Display follow-up prompt in the active terminal
-        if (terminals[activeTerminalId]) {
-            terminals[activeTerminalId].write(`\r\n\x1b[1;36mYou:\x1b[0m ${followupPrompt}\r\n\r\n`);
-            
-            // Disable interface and show loading
-            isProcessing = true;
-            disableInterface();
-            followupBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            
-            // Send each character of the follow-up prompt individually to simulate typing
-            for (const char of followupPrompt) {
-                socket.emit('terminal-input', { terminalId: activeTerminalId, input: char });
-            }
-            
-            // Send Enter key after the prompt
-            setTimeout(() => {
-                socket.emit('terminal-input', { terminalId: activeTerminalId, input: '\r' });
-            }, 100);
-            
-            // Clear the input field
-            followupInput.value = '';
-        }
-    });
-    
     // Function to enable interface elements
     function enableInterface() {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i><span>Execute</span>';
         createTerminalsBtn.disabled = false;
         createTerminalsBtn.innerHTML = '<i class="fas fa-terminal"></i><span>Create Terminals</span>';
-        followupBtn.disabled = false;
-        followupBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
         document.querySelectorAll('.escape-btn').forEach(btn => {
             btn.disabled = false;
         });
         promptInput.disabled = false;
-        followupInput.disabled = false;
         
         // Enable terminal count buttons
         if (terminalCountButtons) {
@@ -681,12 +650,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function disableInterface() {
         submitBtn.disabled = true;
         createTerminalsBtn.disabled = true;
-        followupBtn.disabled = true;
         document.querySelectorAll('.escape-btn').forEach(btn => {
             btn.disabled = true;
         });
         promptInput.disabled = true;
-        followupInput.disabled = true;
         
         // Disable terminal count buttons
         if (terminalCountButtons) {
