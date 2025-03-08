@@ -1,92 +1,179 @@
 # Claude Code Web Interface
 
-A web interface for Claude Code CLI that allows you to access and use Claude Code from your mobile device or any web browser.
+A web interface for interacting with Claude AI through a terminal interface.
 
 ## Features
 
-- Web-based interface for Claude Code
-- Real-time terminal output streaming
+- Real-time terminal interaction with Claude
+- Support for multiple terminals
+- Modern, responsive UI built with Next.js
 - Mobile-friendly design
-- WebSocket communication for instant feedback
-- Automatic file trust handling
+- WebSocket communication between frontend and backend
 
-## Prerequisites
+## Project Structure
 
-- Node.js (v14 or higher)
-- npm (v6 or higher)
-- Claude Code CLI installed and working on your machine
+- `server/` - Backend server using Express and Socket.IO
+- `frontend/` - Next.js frontend application
+- `client/` - Legacy HTML/JS frontend (kept for backward compatibility)
 
-## Installation
+## Getting Started
 
-1. Clone this repository:
-   ```
-   git clone <repository-url>
-   cd claudeSync
-   ```
+### Prerequisites
 
-2. Install dependencies for both server and client:
-   ```
-   cd server && npm install
-   cd ../client && npm install
-   ```
+- Node.js 18.0.0 or later
+- npm or yarn
 
-3. Start the server:
-   ```
-   cd ../server && npm start
-   ```
+### Installation
 
-4. Access the web interface:
-   Open your browser and navigate to `http://localhost:3000`
+1. Install all dependencies:
 
-## Accessing from Mobile Devices
-
-To access the web interface from your mobile device:
-
-1. Make sure your computer and mobile device are on the same network.
-2. Find your computer's local IP address (e.g., 192.168.1.x).
-3. On your mobile device, open a browser and navigate to `http://<your-computer-ip>:3000`.
-
-Note: You may need to configure your firewall to allow connections on port 3000.
-
-## Configuration
-
-You can customize the application behavior using environment variables in a `.env` file in the server directory:
-
-```
-# Terminal Configuration
-TERMINAL_CWD=/path/to/your/preferred/directory
-
-# Server Configuration
-PORT=3000
+```bash
+npm run install-deps
 ```
 
-- `TERMINAL_CWD`: Sets the initial working directory for the terminal (default: user's home directory)
-- `PORT`: Sets the port for the server (default: 3000)
+This will install dependencies for the root project, server, and frontend.
 
-## Usage
+### Running the Application
 
-1. Enter your prompt in the text area.
-2. Click "Execute" to send the prompt to Claude Code.
-3. The server will run `claude "your prompt"` with your prompt in quotes.
-4. After 2 seconds, the system automatically presses Enter to trust files if prompted.
-5. View the real-time output in the terminal display.
-6. Use the "Clear" button to clear the terminal output.
+You have several options to run the application:
 
-## How It Works
+#### Run both backend and frontend together
 
-1. The web interface sends your prompt to the server via WebSockets.
-2. The server spawns a terminal process and runs the Claude Code CLI with your prompt directly: `claude "your prompt"`.
-3. After a short delay, the system automatically presses Enter to handle any file trust prompts.
-4. The terminal output is streamed back to your browser in real-time.
-5. You can see the Claude Code responses as they are generated.
+```bash
+npm run start:all
+```
 
-## Troubleshooting
+This will start both the backend server on port 3000 and the Next.js frontend on port 3001.
 
-- **Connection Issues**: Make sure the server is running and accessible from your device.
-- **Claude Code Not Found**: Ensure that Claude Code CLI is installed and available in your PATH.
-- **Terminal Output Issues**: Check the server logs for any errors related to the terminal process.
-- **File Trust Issues**: If Claude is still asking for file trust, you may need to increase the delay in the server code.
+#### Run only the backend server
+
+```bash
+npm run start:backend
+# or
+npm start
+```
+
+This will start the backend server on port 3000, serving the legacy HTML/JS frontend.
+
+#### Run only the Next.js frontend
+
+```bash
+npm run start:frontend
+```
+
+This will start the Next.js frontend on port 3001. Note that you'll need the backend server running for it to work properly.
+
+### Accessing the Application
+
+- Legacy frontend: http://localhost:3000
+- Next.js frontend: http://localhost:3001
+- Redirect to Next.js frontend: http://localhost:3000/next
+
+### Using Cloudflare Tunnels for Remote Access
+
+You can use Cloudflare tunnels to access your local development environment from anywhere, including your mobile device, without being on the same network.
+
+#### Prerequisites
+
+- [Cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation) (will be installed automatically by the setup script if not present)
+
+#### Running with Cloudflare Tunnels
+
+```bash
+npm run start:cloudflare
+```
+
+This will:
+1. Install Cloudflared if not already installed
+2. Start both the frontend and backend servers
+3. Create Cloudflare tunnels for both servers
+4. Display the tunnel URLs
+5. Open the frontend URL in your default browser
+
+You can now access your Claude Code Web Interface from anywhere using the provided URL.
+
+#### Stopping the Tunnels
+
+To stop the tunnels and servers, run:
+
+```bash
+./stop-cloudflare-tunnel.sh
+```
+
+#### Troubleshooting Tunnel URLs
+
+If the tunnel setup script fails to extract the tunnel URLs, you can use the extraction tool:
+
+```bash
+npm run extract:tunnels
+```
+
+This will:
+1. Look for tunnel URLs in the log files
+2. Extract and save them to the appropriate files
+3. Display the extracted URLs
+
+You can also run the extraction tool manually:
+
+```bash
+./extract-tunnel-urls.sh
+```
+
+#### Manual Setup
+
+If you prefer to set up the tunnels manually:
+
+1. Start the backend server:
+   ```bash
+   npm run start:backend
+   ```
+
+2. Start the frontend server:
+   ```bash
+   npm run start:frontend
+   ```
+
+3. Create a tunnel for the backend:
+   ```bash
+   cloudflared tunnel --url http://localhost:3000
+   ```
+
+4. Create a tunnel for the frontend:
+   ```bash
+   cloudflared tunnel --url http://localhost:3001
+   ```
+
+Note: When accessing through Cloudflare tunnels, the frontend will automatically connect to the backend tunnel.
+
+#### Quick Tunnels
+
+For quick testing, you can use the quick tunnel scripts:
+
+1. For the frontend (port 3001):
+   ```bash
+   npm run tunnel:frontend
+   ```
+
+2. For the backend (port 3000):
+   ```bash
+   npm run tunnel:backend
+   ```
+
+3. For a custom port:
+   ```bash
+   ./quick-tunnel.sh <port>
+   # or
+   npm run tunnel:quick -- <port>
+   ```
+
+These commands will create a single tunnel in the foreground, which you can stop with Ctrl+C.
+
+## Development
+
+- Backend server code is in the `server/` directory
+- Next.js frontend code is in the `frontend/` directory
+- Legacy frontend code is in the `client/` directory
 
 ## License
 
-MIT 
+This project is licensed under the MIT License - see the LICENSE file for details.

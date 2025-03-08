@@ -1,0 +1,244 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+@import "./styles.css";
+
+@theme {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+/* Terminal styling */
+.terminal-container {
+  height: auto !important;
+  min-height: 550px;
+  max-height: 650px;
+  overflow: hidden;
+  position: relative;
+  padding: 0 !important;
+  width: 100% !important;  /* Ensure full width utilization */
+  max-width: 1200px !important; /* Allow much wider terminals */
+  margin: 0 auto; /* Center if smaller than max-width */
+}
+
+.terminal-container.compact {
+  min-height: 450px;
+  max-height: 550px;
+}
+
+/* Terminal sizing for multi-terminal layouts */
+.multi-terminal-layout .terminal-container {
+  max-width: 100% !important; /* Allow terminals to use full width when multiple */
+  width: 100% !important;
+}
+
+/* Reset any transform or positioning from xterm */
+.terminal-container * {
+  transform: none !important;
+}
+
+/* Fix xterm container positioning */
+.terminal-container .xterm {
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important; /* Ensure xterm fills container width */
+}
+
+/* Ensure proper viewport rendering */
+.terminal-container .xterm-viewport {
+  overflow-y: auto !important;
+  overflow-x: auto !important; /* Allow horizontal scrolling if needed */
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+}
+
+/* Fix screen element */
+.terminal-container .xterm-screen {
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: auto !important;
+  padding: 4px !important;
+}
+
+/* Ensure rows are visible */
+.terminal-container .xterm-rows {
+  transform: none !important;
+  position: relative !important;
+  left: 0 !important;
+  top: 0 !important;
+  padding: 6px 12px !important;
+  margin: 0 !important;
+}
+
+/* Make sure each terminal row is visible */
+.terminal-container .xterm-rows > div {
+  position: relative !important;
+  white-space: nowrap !important;
+  left: 0 !important;
+}
+
+/* Fix cursor positioning */
+.terminal-container .xterm-cursor-layer {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 1 !important;
+}
+
+@media (max-width: 768px) {
+  .terminal-container {
+    min-height: 350px;
+    max-height: 450px;
+  }
+
+  .terminal-container.compact {
+    min-height: 300px;
+    max-height: 400px;
+  }
+
+  /* Smaller padding on mobile */
+  .terminal-container .xterm-rows {
+    padding: 4px 8px !important;
+  }
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: #1A1B1E;  /* Specified background color */
+  --foreground: #f8f8f2;  /* Dracula foreground */
+  --card: #21222c;  /* Dracula black */
+  --card-foreground: #f8f8f2;
+  --popover: #21222c;
+  --popover-foreground: #f8f8f2;
+  --primary: #bd93f9;  /* Dracula purple */
+  --primary-foreground: #f8f8f2;
+  --secondary: #282a36;  /* Dracula background */
+  --secondary-foreground: #f8f8f2;
+  --muted: #44475a;  /* Dracula selection */
+  --muted-foreground: #6272a4;  /* Dracula comment */
+  --accent: #6272a4;  /* Dracula bright black */
+  --accent-foreground: #f8f8f2;
+  --destructive: #ff5555;  /* Dracula red */
+  --destructive-foreground: #f8f8f2;
+  --border: #44475a;  /* Dracula selection */
+  --input: #282a36;
+  --ring: #bd93f9;  /* Dracula purple */
+  --radius: 0.625rem;
+  
+  /* Keep the chart colors as they are */
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  
+  /* Update sidebar colors to match the theme */
+  --sidebar: #21222c;
+  --sidebar-foreground: #f8f8f2;
+  --sidebar-primary: #bd93f9;
+  --sidebar-primary-foreground: #f8f8f2;
+  --sidebar-accent: #44475a;
+  --sidebar-accent-foreground: #f8f8f2;
+  --sidebar-border: #44475a;
+  --sidebar-ring: #bd93f9;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

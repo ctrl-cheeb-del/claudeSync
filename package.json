@@ -5,7 +5,14 @@
   "main": "index.js",
   "scripts": {
     "start": "cd server && npm start",
-    "install-deps": "npm install && cd server && npm install && cd ../client && npm install",
+    "start:frontend": "cd frontend && npm run dev",
+    "start:backend": "cd server && npm start",
+    "start:cloudflare": "./start-with-cloudflare.sh",
+    "extract:tunnels": "./extract-tunnel-urls.sh",
+    "tunnel:quick": "./quick-tunnel.sh",
+    "tunnel:frontend": "./quick-tunnel.sh 3001",
+    "tunnel:backend": "./quick-tunnel.sh 3000",
+    "install-deps": "cd server && npm install && cd ../frontend && npm install && cd ..",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -15,8 +22,5 @@
     "web-interface"
   ],
   "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "cursor-tools": "latest"
-  }
+  "license": "MIT"
 }

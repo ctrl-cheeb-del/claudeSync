@@ -23,4 +23,25 @@ server/.env.test
 .env.production
 .env.test
 
+frontend/node_modules/*
+frontend/node_modules/.gitkeep
+frontend/.next/*
+frontend/.next/.gitkeep
 
+.cloudflare/*
+.cloudflare/.gitkeep
+cloudflare/*
+/.cloudflare/*
+
+server/logs/*
+server/logs/.gitkeep
+./server/logs/*
+./server/logs/.gitkeeps
+server/terminal_debug.log
+server/terminal_debug.log.*
+
+
+node_modules
+
+.git
+/.git

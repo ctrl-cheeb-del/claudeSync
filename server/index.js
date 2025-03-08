@@ -12,19 +12,48 @@ require('dotenv').config();
 
 // Debug logging helper
 const DEBUG = process.env.DEBUG === 'true';
+const LOGGING = process.env.LOGGING === 'false';
 function logDebug(message) {
-  if (DEBUG) {
+  if (DEBUG && LOGGING) {
     console.log(`[DEBUG] ${message}`);
   }
 }
 
 // Create Express app
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Allow localhost origins
+    if (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
+      return callback(null, true);
+    }
+    
+    // Allow Cloudflare tunnel domains
+    if (origin.includes('trycloudflare.com')) {
+      return callback(null, true);
+    }
+    
+    // Allow any other origins you need
+    // Add your production domain here if needed
+    
+    // Default deny
+    callback(new Error('Not allowed by CORS'));
+  },
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 app.use(express.json());
 
-// Serve static files from the client directory
+// Serve static files from the client directory for backward compatibility
 app.use(express.static(path.join(__dirname, '../client')));
+
+// Add a route to redirect to the Next.js frontend
+app.get('/next', (req, res) => {
+  res.redirect('http://localhost:3001');
+});
 
 // Create HTTP server
 const server = http.createServer(app);
@@ -32,26 +61,47 @@ const server = http.createServer(app);
 // Create Socket.io server with CORS configuration
 const io = new Server(server, {
   cors: {
-    origin: '*', // In production, restrict this to your client's domain
-    methods: ['GET', 'POST']
+    origin: function(origin, callback) {
+      // Allow requests with no origin (like mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+      
+      // Allow localhost origins
+      if (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
+        return callback(null, true);
+      }
+      
+      // Allow Cloudflare tunnel domains
+      if (origin.includes('trycloudflare.com')) {
+        return callback(null, true);
+      }
+      
+      // Allow any other origins you need
+      // Add your production domain here if needed
+      
+      // Default deny
+      callback(new Error('Not allowed by CORS'));
+    },
+    methods: ['GET', 'POST'],
+    credentials: true
   }
 });
 
-// Set up logging for debugging
-const logFile = path.join(__dirname, 'terminal_debug.log');
+// Set up logging for debugging - only if LOGGING is enabled
+let logsDir;
+let sessionLogs = {};
 
-// Create logs directory if it doesn't exist
-const logsDir = path.join(__dirname, 'logs');
-if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir, { recursive: true });
-  console.log(`Created logs directory at ${logsDir}`);
+if (LOGGING) {
+  logsDir = path.join(__dirname, 'logs');
+  if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir, { recursive: true });
+    console.log(`Created logs directory at ${logsDir}`);
+  }
 }
-
-// Session logs - now keyed by socketId-terminalId
-const sessionLogs = {};
 
 // Function to initialize a session log file
 function initSessionLog(socketId, terminalId, prompt) {
+  if (!LOGGING) return null;
+  
   const timestamp = new Date().toISOString().replace(/:/g, '-');
   const logFileName = path.join(logsDir, `claude_session_${socketId}_${terminalId}_${timestamp}.log`);
   
@@ -76,6 +126,8 @@ function initSessionLog(socketId, terminalId, prompt) {
 
 // Function to append to the session log file
 function appendToSessionLog(socketId, terminalId, section, data) {
+  if (!LOGGING) return;
+  
   const sessionKey = `${socketId}-${terminalId}`;
   if (!sessionLogs[sessionKey]) {
     logDebug(`No session log file found for session ${sessionKey}`);
@@ -96,6 +148,8 @@ function appendToSessionLog(socketId, terminalId, section, data) {
 
 // Function to close the session log file
 function closeSessionLog(socketId, terminalId) {
+  if (!LOGGING) return;
+  
   const sessionKey = `${socketId}-${terminalId}`;
   if (!sessionLogs[sessionKey]) {
     return;
@@ -302,8 +356,8 @@ io.on('connection', (socket) => {
     const { terminalId, input } = data;
     
     if (clientTerminals[terminalId]) {
-      // Log the input for debugging
-      if (input.length > 1 || input.charCodeAt(0) < 32) {
+      // Log the input for debugging only if logging is enabled
+      if (LOGGING && (input.length > 1 || input.charCodeAt(0) < 32)) {
         logDebug(`Terminal ${terminalId} input: ${JSON.stringify(input)}`);
       }
       
@@ -319,7 +373,9 @@ io.on('connection', (socket) => {
     const { terminalId, cols, rows } = data;
     
     if (clientTerminals[terminalId]) {
-      logDebug(`Resizing terminal ${terminalId} to ${cols}x${rows}`);
+      if (LOGGING) {
+        logDebug(`Resizing terminal ${terminalId} to ${cols}x${rows}`);
+      }
       try {
         clientTerminals[terminalId].resize(cols, rows);
       } catch (error) {
